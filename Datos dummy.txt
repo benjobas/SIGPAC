@@ -1,0 +1,94 @@
+═══════════════════════════════════════════════════════════════
+  SIGPAC USS — DATOS DUMMY PARA PRUEBAS
+  Generado: 2026-03-19
+═══════════════════════════════════════════════════════════════
+
+Para poblar la base: npx prisma db seed
+Para ver los datos: npx prisma studio
+
+───────────────────────────────────────────────────────────────
+  ALUMNOS (tabla Alumno)
+───────────────────────────────────────────────────────────────
+
+ROL: ESTUDIANTE
+┌─────────────────────────────┬─────────────────────────────────┬───────┬──────────┐
+│ Nombre                      │ Email                           │ Año   │ Sede     │
+├─────────────────────────────┼─────────────────────────────────┼───────┼──────────┤
+│ Ana Martínez Rojas          │ ana.martinez@correo.uss.cl      │  3    │ SANTIAGO │
+│ Carlos Fuentes Díaz         │ carlos.fuentes@correo.uss.cl    │  4    │ SANTIAGO │
+│ Sofía Herrera Muñoz         │ sofia.herrera@correo.uss.cl     │  5    │ SANTIAGO │
+└─────────────────────────────┴─────────────────────────────────┴───────┴──────────┘
+
+ROL: DOCENTE
+┌─────────────────────────────┬─────────────────────────────────┬───────┬──────────┐
+│ Nombre                      │ Email                           │ Año   │ Sede     │
+├─────────────────────────────┼─────────────────────────────────┼───────┼──────────┤
+│ Dr. Jorge Vidal Contreras   │ jorge.vidal@correo.uss.cl       │  0    │ SANTIAGO │
+│ Dra. Patricia Soto Alvarado │ patricia.soto@correo.uss.cl     │  0    │ SANTIAGO │
+└─────────────────────────────┴─────────────────────────────────┴───────┴──────────┘
+
+Para iniciar sesión: ingresar el email en /login, llega magic link (si Resend está configurado).
+Para probar sin email real: revisar tabla VerificationToken en Prisma Studio y copiar el token.
+
+───────────────────────────────────────────────────────────────
+  PACIENTES (tabla Paciente)
+───────────────────────────────────────────────────────────────
+
+ESTADO: DISPONIBLE (aparecen en /pacientes para elegir)
+┌──────────────────────────────┬──────────────────┬──────┬─────────────────┬───────────────────────────────────────────────────────────────┐
+│ Nombre                       │ RUT              │ Edad │ Comuna          │ Motivo consulta                                               │
+├──────────────────────────────┼──────────────────┼──────┼─────────────────┼───────────────────────────────────────────────────────────────┤
+│ Roberto Saavedra Pinto       │ 12.345.678-9     │  45  │ Providencia     │ Dolor molar inferior derecho y sensibilidad al frío           │
+│ Carmen Gloria Valdés         │ 9.876.543-2      │  62  │ Las Condes      │ Necesita prótesis removible superior                          │
+│ Felipe Araya Morales         │ 15.432.109-8     │  28  │ Ñuñoa           │ Revisión general, limpieza y caries múltiples                 │
+│ Marcela Jiménez Torres       │ 11.223.344-5     │  38  │ Maipú           │ Encías sangrantes y movilidad dental                          │
+│ Andrés Espinoza Lagos        │ 7.654.321-0      │  54  │ Santiago Centro │ Extracción de tercer molar impactado                          │
+└──────────────────────────────┴──────────────────┴──────┴─────────────────┴───────────────────────────────────────────────────────────────┘
+
+ESTADO: ASIGNADO
+┌──────────────────────────────┬──────────────────┬──────┬────────────┬──────────────────────────────────────────────┐
+│ Nombre                       │ RUT              │ Edad │ Comuna     │ Asignado a                                   │
+├──────────────────────────────┼──────────────────┼──────┼────────────┼──────────────────────────────────────────────┤
+│ Luisa Contreras Ríos         │ 13.579.246-8     │  41  │ Pudahuel   │ Ana Martínez (PENDIENTE, expira en ~24h)     │
+└──────────────────────────────┴──────────────────┴──────┴────────────┴──────────────────────────────────────────────┘
+
+ESTADO: EN_CONTACTO
+┌──────────────────────────────┬──────────────────┬──────┬────────────┬──────────────────────────────────────────────┐
+│ Nombre                       │ RUT              │ Edad │ Comuna     │ Asignado a                                   │
+├──────────────────────────────┼──────────────────┼──────┼────────────┼──────────────────────────────────────────────┤
+│ Tomás Guerrero Sepúlveda     │ 16.802.134-7     │  33  │ La Florida │ Carlos Fuentes (CONTACTADO, expira en ~18h)  │
+└──────────────────────────────┴──────────────────┴──────┴────────────┴──────────────────────────────────────────────┘
+
+───────────────────────────────────────────────────────────────
+  ASIGNACIONES ACTIVAS (tabla Asignacion)
+───────────────────────────────────────────────────────────────
+
+1. Ana Martínez → Luisa Contreras
+   Estado:    PENDIENTE
+   Asignado:  ahora (al correr el seed)
+   Expira:    en 24 horas
+
+2. Carlos Fuentes → Tomás Guerrero
+   Estado:    CONTACTADO
+   Asignado:  hace 6 horas (simulado)
+   Expira:    en ~18 horas
+
+───────────────────────────────────────────────────────────────
+  FLUJOS QUE SE PUEDEN PROBAR
+───────────────────────────────────────────────────────────────
+
+Como ESTUDIANTE (ej: ana.martinez@correo.uss.cl):
+  - Ver lista de pacientes disponibles en /pacientes
+  - Asignar un paciente libre (Roberto, Carmen, Felipe, Marcela o Andrés)
+  - Ver el paciente asignado actual (Luisa) en /mi-paciente
+  - Marcar acciones: CONTACTADO, CITA_AGENDADA, NO_RESPONDE
+
+Como DOCENTE (ej: jorge.vidal@correo.uss.cl):
+  - Acceder al panel /admin
+  - Ver estadísticas y gestión de todos los pacientes y alumnos
+
+Cron de expiración:
+  - Las asignaciones vencen en 24h (Ana→Luisa) o ~18h (Carlos→Tomás)
+  - Para probar el cron rápido: cambiar expiraEn en el seed a now + 2 minutos
+
+───────────────────────────────────────────────────────────────

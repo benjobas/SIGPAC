@@ -4,6 +4,8 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { authConfig } from "./auth.config";
 import { prisma } from "./db";
 
+const isDev = process.env.NODE_ENV === "development";
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(prisma),
@@ -12,6 +14,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Resend({
       apiKey: process.env.RESEND_API_KEY,
       from: process.env.AUTH_EMAIL_FROM ?? "SIGPAC USS <noreply@correo.uss.cl>",
+      // En desarrollo: imprime el magic link en consola en vez de enviar email
+      ...(isDev && {
+        sendVerificationRequest({ url, identifier }) {
+          console.log("\n========== MAGIC LINK (dev) ==========");
+          console.log(`Email: ${identifier}`);
+          console.log(`URL:   ${url}`);
+          console.log("======================================\n");
+        },
+      }),
     }),
   ],
   callbacks: {
