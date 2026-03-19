@@ -1,0 +1,126 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ──────────────────────────────────────────────────────────────────
+
+enum EstadoPaciente {
+  DISPONIBLE
+  ASIGNADO
+  EN_CONTACTO
+  CITA_AGENDADA
+  NO_RESPONDE
+  ATENDIDO
+}
+
+enum EstadoAsignacion {
+  PENDIENTE
+  CONTACTADO
+  CITA_AGENDADA
+  NO_RESPONDE
+}
+
+enum Sede {
+  SANTIAGO
+  CONCEPCION
+  VALDIVIA
+  PATAGONIA
+}
+
+enum Rol {
+  ESTUDIANTE
+  DOCENTE
+}
+
+// ─── Modelos NextAuth ────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─── Modelos de negocio ───────────────────────────────────────────────────────
+
+model Paciente {
+  id              String         @id @default(cuid())
+  nombre          String
+  rut             String         @unique
+  telefono        String
+  email           String?
+  edad            Int
+  comuna          String
+  motivoConsulta  String
+  disponibilidad  Json           // { lunes: ["am","pm"], martes: ["am"], ... }
+  sedePreferencia Sede
+  estado          EstadoPaciente @default(DISPONIBLE)
+  asignaciones    Asignacion[]
+  creadoEn        DateTime       @default(now())
+  actualizadoEn   DateTime       @updatedAt
+}
+
+model Alumno {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  nombre       String
+  sede         Sede
+  año          Int
+  rol          Rol          @default(ESTUDIANTE)
+  requisitos   Json         // ["protesis_removible", "endodoncia", ...]
+  asignaciones Asignacion[]
+}
+
+model Asignacion {
+  id            String           @id @default(cuid())
+  pacienteId    String
+  alumnoId      String
+  paciente      Paciente         @relation(fields: [pacienteId], references: [id])
+  alumno        Alumno           @relation(fields: [alumnoId], references: [id])
+  asignadoEn    DateTime         @default(now())
+  expiraEn      DateTime
+  estado        EstadoAsignacion @default(PENDIENTE)
+  actualizadoEn DateTime         @updatedAt
+}
